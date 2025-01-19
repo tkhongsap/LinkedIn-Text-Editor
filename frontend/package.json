@@ -22,7 +22,9 @@
     "react-dom": "18.2.0",
     "react-draft-wysiwyg": "1.15.0",
     "tailwind-merge": "1.14.0",
-    "tailwindcss-animate": "1.0.5"
+    "tailwindcss-animate": "1.0.7",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10"
   },
   "devDependencies": {
     "@types/draft-js": "0.11.17",
