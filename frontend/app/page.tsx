@@ -33,33 +33,35 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      <nav className="border-b bg-white/80 backdrop-blur-sm fixed w-full z-10">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-semibold text-[#0A66C2]">
-            LinkedIn Text Editor
-          </h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f9ff] via-white to-[#f0f4ff]">
+      <nav className="border-b border-gray-100 bg-white/70 backdrop-blur-md fixed w-full z-10">
+        <div className="container mx-auto px-6 py-5">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#0077B5] to-[#00A0DC] bg-clip-text text-transparent">
+              LinkedIn Text Editor
+            </h1>
+            <Button
+              onClick={handleAIEnhance}
+              className="bg-gradient-to-r from-[#0077B5] to-[#00A0DC] text-white hover:opacity-90 transition-all duration-200 font-medium px-6"
+              disabled={isLoading || !text.trim()}
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              {isLoading ? 'Enhancing...' : 'AI Enhance'}
+            </Button>
+          </div>
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 pt-24 pb-12">
+      <main className="container mx-auto px-6 pt-28 pb-16">
         <div className="max-w-[1200px] mx-auto">
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* Editor Panel */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200/80 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="text-lg font-medium text-gray-900">Edit Your Text</h2>
-                <Button
-                  onClick={handleAIEnhance}
-                  className="bg-[#0A66C2] hover:bg-[#004182] text-white transition-all duration-200 shadow-sm w-full sm:w-auto"
-                  disabled={isLoading || !text.trim()}
-                >
-                  <Wand2 className="h-4 w-4 mr-2" />
-                  {isLoading ? 'Enhancing...' : 'AI Enhance'}
-                </Button>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100/50 overflow-hidden backdrop-blur-sm">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-800">Edit Your Text</h2>
               </div>
               
-              <div className="px-6 py-3 bg-gray-50/50 border-b border-gray-100 flex flex-wrap gap-1">
+              <div className="px-5 py-3 bg-gray-50/80 border-b border-gray-100 flex flex-wrap items-center gap-1">
                 <TooltipProvider>
                   {[
                     { icon: FormatBold, format: 'bold', tooltip: 'Bold' },
@@ -75,13 +77,13 @@ export default function Home() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 rounded hover:bg-gray-100 text-gray-600 hover:text-[#0A66C2] transition-colors duration-200"
+                          className="h-8 w-8 rounded-lg hover:bg-white text-gray-600 hover:text-[#0077B5] transition-all duration-200"
                           onClick={() => applyFormat(format)}
                         >
                           <Icon className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-gray-900 text-white">
+                      <TooltipContent className="bg-gray-800 text-white text-xs">
                         <p>{tooltip}</p>
                       </TooltipContent>
                     </Tooltip>
@@ -93,20 +95,20 @@ export default function Home() {
                 <Textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[400px] resize-none rounded border-gray-200 focus:border-[#0A66C2] focus:ring-[#0A66C2]/10 transition-colors duration-200 text-gray-800 placeholder:text-gray-400"
+                  className="min-h-[400px] resize-none rounded-lg border-gray-200 focus:border-[#0077B5] focus:ring-[#0077B5]/10 transition-all duration-200 text-gray-700 placeholder:text-gray-400"
                   placeholder="Type your post here..."
                 />
               </div>
             </div>
 
             {/* Preview Panel */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200/80 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="text-lg font-medium text-gray-900">Preview</h2>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100/50 overflow-hidden backdrop-blur-sm">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-800">Preview</h2>
                 <Button
                   onClick={copyToClipboard}
                   variant="outline"
-                  className="border-gray-200 text-gray-600 hover:text-[#0A66C2] hover:border-[#0A66C2] transition-colors duration-200 shadow-sm w-full sm:w-auto"
+                  className="border-gray-200 text-gray-600 hover:text-[#0077B5] hover:border-[#0077B5] transition-all duration-200"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy Text
@@ -117,20 +119,20 @@ export default function Home() {
                 <div className="min-h-[400px] p-6 rounded-lg border border-gray-200 bg-gray-50/50 whitespace-pre-wrap overflow-y-auto">
                   {aiSuggestion ? (
                     <div className="space-y-6">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] text-sm font-medium">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#0077B5]/10 to-[#00A0DC]/10 text-[#0077B5] text-sm font-medium">
                         <Wand2 className="h-3.5 w-3.5" />
                         AI-enhanced suggestion
                       </div>
-                      <div className="text-gray-800 leading-relaxed">{aiSuggestion}</div>
+                      <div className="text-gray-700 leading-relaxed">{aiSuggestion}</div>
                       <Button 
                         onClick={applySuggestion} 
-                        className="bg-[#0A66C2] hover:bg-[#004182] text-white transition-all duration-200 shadow-sm w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#0077B5] to-[#00A0DC] text-white hover:opacity-90 transition-all duration-200 font-medium"
                       >
                         Apply Suggestion
                       </Button>
                     </div>
                   ) : (
-                    <div className="text-gray-800 leading-relaxed">{text}</div>
+                    <div className="text-gray-700 leading-relaxed">{text}</div>
                   )}
                 </div>
               </div>
