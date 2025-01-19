@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react'
 
-// RTF control words for formatting
-const RTF_FORMAT = {
-  bold: { start: '\\b ', end: '\\b0 ' },
-  italic: { start: '\\i ', end: '\\i0 ' },
-  underline: { start: '\\ul ', end: '\\ul0 ' }
+// Unicode combining characters for formatting
+const FORMATS = {
+  bold: '\u{034F}\u{0333}',      // Invisible plus double underline (appears bold)
+  italic: '\u{0301}',            // Combining acute accent
+  underline: '\u{0332}'          // Combining low line
 }
 
 export function useLinkedInEditor() {
@@ -25,29 +25,25 @@ export function useLinkedInEditor() {
         case 'bold':
         case 'italic':
         case 'underline':
-          formattedSelection = `${RTF_FORMAT[format].start}${selectedText}${RTF_FORMAT[format].end}`
+          // Apply combining character after each character
+          formattedSelection = selectedText.split('').map(char => 
+            char + FORMATS[format as keyof typeof FORMATS]
+          ).join('')
           break
         case 'bullet':
-          formattedSelection = selectedText.split('\n')
-            .map(line => `\\listtext\\bullet\\tab ${line}\\par`)
-            .join('\n')
+          formattedSelection = '• ' + selectedText.split('\n').join('\n• ')
           break
         case 'number':
-          formattedSelection = selectedText.split('\n')
-            .map((line, i) => `\\listtext${i + 1}.\\tab ${line}\\par`)
-            .join('\n')
+          formattedSelection = selectedText.split('\n').map((line, i) => `${i + 1}. ${line}`).join('\n')
           break
         case 'link':
           const url = prompt('Enter the URL:')
           if (url) {
-            // LinkedIn specific hyperlink format
-            formattedSelection = `\\field{\\*\\fldinst HYPERLINK "${url}"}{\\fldrslt ${selectedText}}`
+            formattedSelection = `[${selectedText}](${url})`
           }
           break
         case 'quote':
-          formattedSelection = selectedText.split('\n')
-            .map(line => `\\quotation ${line}\\par`)
-            .join('\n')
+          formattedSelection = '> ' + selectedText.split('\n').join('\n> ')
           break
       }
 
@@ -63,12 +59,9 @@ export function useLinkedInEditor() {
   }, [text])
 
   const copyToClipboard = useCallback(() => {
-    // Wrap the text in proper RTF document structure before copying
-    const rtfDocument = `{\\rtf1\\ansi\n${text}\n}`
-    
-    navigator.clipboard.writeText(rtfDocument)
+    navigator.clipboard.writeText(text)
       .then(() => {
-        alert('Formatted text copied to clipboard!')
+        alert('Text copied to clipboard!')
       })
       .catch(err => {
         console.error('Failed to copy: ', err)
