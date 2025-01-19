@@ -10,11 +10,12 @@ export function useLinkedInEditor() {
   const [text, setText] = useState('')
 
   const applyFormat = useCallback((format: string) => {
-    const selection = window.getSelection()
-    if (!selection || selection.rangeCount === 0) return
+    const textarea = document.querySelector('textarea')
+    if (!textarea) return
 
-    const range = selection.getRangeAt(0)
-    const selectedText = range.toString()
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = text.substring(start, end)
     
     if (selectedText) {
       let formattedSelection = selectedText
@@ -27,8 +28,11 @@ export function useLinkedInEditor() {
             .split('')
             .map(char => {
               const code = char.charCodeAt(0)
-              if (code >= 97 && code <= 122) {
+              if (code >= 97 && code <= 122) { // lowercase letters
                 return String.fromCharCode(code - 97 + formatMap[format].offset)
+              }
+              if (code >= 65 && code <= 90) { // uppercase letters
+                return String.fromCharCode(code - 65 + formatMap[format].offset)
               }
               return char
             })
@@ -51,21 +55,25 @@ export function useLinkedInEditor() {
           break
       }
 
-      const newText = 
-        text.slice(0, range.startOffset) +
-        formattedSelection +
-        text.slice(range.endOffset)
-
+      const newText = text.substring(0, start) + formattedSelection + text.substring(end)
       setText(newText)
+
+      // Restore selection
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start, start + formattedSelection.length)
+      }, 0)
     }
   }, [text])
 
   const copyToClipboard = useCallback(() => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Text copied to clipboard!')
-    }).catch(err => {
-      console.error('Failed to copy: ', err)
-    })
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Text copied to clipboard!')
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err)
+      })
   }, [text])
 
   return {
