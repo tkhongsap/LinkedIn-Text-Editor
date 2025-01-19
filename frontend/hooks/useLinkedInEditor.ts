@@ -1,5 +1,12 @@
 import { useState, useCallback } from 'react'
 
+// RTF control words for formatting
+const RTF_FORMAT = {
+  bold: { start: '\\b ', end: '\\b0 ' },
+  italic: { start: '\\i ', end: '\\i0 ' },
+  underline: { start: '\\ul ', end: '\\ul0 ' }
+}
+
 export function useLinkedInEditor() {
   const [text, setText] = useState('')
 
@@ -16,28 +23,31 @@ export function useLinkedInEditor() {
 
       switch (format) {
         case 'bold':
-          formattedSelection = `**${selectedText}**`
-          break
         case 'italic':
-          formattedSelection = `_${selectedText}_`
-          break
         case 'underline':
-          formattedSelection = `__${selectedText}__`
+          formattedSelection = `${RTF_FORMAT[format].start}${selectedText}${RTF_FORMAT[format].end}`
           break
         case 'bullet':
-          formattedSelection = '• ' + selectedText.split('\n').join('\n• ')
+          formattedSelection = selectedText.split('\n')
+            .map(line => `\\listtext\\bullet\\tab ${line}\\par`)
+            .join('\n')
           break
         case 'number':
-          formattedSelection = selectedText.split('\n').map((line, i) => `${i + 1}. ${line}`).join('\n')
+          formattedSelection = selectedText.split('\n')
+            .map((line, i) => `\\listtext${i + 1}.\\tab ${line}\\par`)
+            .join('\n')
           break
         case 'link':
           const url = prompt('Enter the URL:')
           if (url) {
-            formattedSelection = `[${selectedText}](${url})`
+            // LinkedIn specific hyperlink format
+            formattedSelection = `\\field{\\*\\fldinst HYPERLINK "${url}"}{\\fldrslt ${selectedText}}`
           }
           break
         case 'quote':
-          formattedSelection = '> ' + selectedText.split('\n').join('\n> ')
+          formattedSelection = selectedText.split('\n')
+            .map(line => `\\quotation ${line}\\par`)
+            .join('\n')
           break
       }
 
@@ -53,9 +63,12 @@ export function useLinkedInEditor() {
   }, [text])
 
   const copyToClipboard = useCallback(() => {
-    navigator.clipboard.writeText(text)
+    // Wrap the text in proper RTF document structure before copying
+    const rtfDocument = `{\\rtf1\\ansi\n${text}\n}`
+    
+    navigator.clipboard.writeText(rtfDocument)
       .then(() => {
-        alert('Text copied to clipboard!')
+        alert('Formatted text copied to clipboard!')
       })
       .catch(err => {
         console.error('Failed to copy: ', err)
