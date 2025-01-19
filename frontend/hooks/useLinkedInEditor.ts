@@ -1,11 +1,5 @@
 import { useState, useCallback } from 'react'
 
-const formatMap = {
-  bold: { start: '𝗯', end: '𝘇', offset: 0x1D5D4 },
-  italic: { start: '𝘢', end: '𝘻', offset: 0x1D608 },
-  underline: { start: '͟a', end: '͟z', offset: 0x035F },
-}
-
 export function useLinkedInEditor() {
   const [text, setText] = useState('')
 
@@ -22,21 +16,13 @@ export function useLinkedInEditor() {
 
       switch (format) {
         case 'bold':
+          formattedSelection = `**${selectedText}**`
+          break
         case 'italic':
+          formattedSelection = `_${selectedText}_`
+          break
         case 'underline':
-          formattedSelection = selectedText
-            .split('')
-            .map(char => {
-              const code = char.charCodeAt(0)
-              if (code >= 97 && code <= 122) { // lowercase letters
-                return String.fromCharCode(code - 97 + formatMap[format].offset)
-              }
-              if (code >= 65 && code <= 90) { // uppercase letters
-                return String.fromCharCode(code - 65 + formatMap[format].offset)
-              }
-              return char
-            })
-            .join('')
+          formattedSelection = `__${selectedText}__`
           break
         case 'bullet':
           formattedSelection = '• ' + selectedText.split('\n').join('\n• ')
