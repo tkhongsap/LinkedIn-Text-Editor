@@ -1,12 +1,5 @@
 import { useState, useCallback } from 'react'
 
-// Unicode combining characters for formatting
-const FORMATS = {
-  bold: '\u{034F}\u{0333}',      // Invisible plus double underline (appears bold)
-  italic: '\u{0301}',            // Combining acute accent
-  underline: '\u{0332}'          // Combining low line
-}
-
 export function useLinkedInEditor() {
   const [text, setText] = useState('')
 
@@ -23,27 +16,34 @@ export function useLinkedInEditor() {
 
       switch (format) {
         case 'bold':
+          formattedSelection = `<strong>${selectedText}</strong>`
+          break
         case 'italic':
+          formattedSelection = `<em>${selectedText}</em>`
+          break
         case 'underline':
-          // Apply combining character after each character
-          formattedSelection = selectedText.split('').map(char => 
-            char + FORMATS[format as keyof typeof FORMATS]
-          ).join('')
+          formattedSelection = `<u>${selectedText}</u>`
           break
         case 'bullet':
-          formattedSelection = '• ' + selectedText.split('\n').join('\n• ')
+          formattedSelection = selectedText.split('\n')
+            .map(line => `• ${line}`)
+            .join('\n')
           break
         case 'number':
-          formattedSelection = selectedText.split('\n').map((line, i) => `${i + 1}. ${line}`).join('\n')
+          formattedSelection = selectedText.split('\n')
+            .map((line, i) => `${i + 1}. ${line}`)
+            .join('\n')
           break
         case 'link':
           const url = prompt('Enter the URL:')
           if (url) {
-            formattedSelection = `[${selectedText}](${url})`
+            formattedSelection = `<a href="${url}">${selectedText}</a>`
           }
           break
         case 'quote':
-          formattedSelection = '> ' + selectedText.split('\n').join('\n> ')
+          formattedSelection = selectedText.split('\n')
+            .map(line => `> ${line}`)
+            .join('\n')
           break
       }
 
