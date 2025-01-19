@@ -49,7 +49,11 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+  			purple: {
+  				500: '#7C3AED',
+  				600: '#6D28D9',
+  			},
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
