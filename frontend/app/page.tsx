@@ -33,21 +33,21 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FF] p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-semibold text-center text-[#0077B5] mb-8">
+        <h1 className="text-3xl font-semibold text-center text-primary mb-8">
           LinkedIn Text Editor
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Editor Panel */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
+          <div className="bg-card rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg text-[#0077B5]">Edit Your Text</h2>
+              <h2 className="text-lg text-primary">Edit Your Text</h2>
               <Button
                 onClick={handleAIEnhance}
                 variant="ghost"
-                className="text-[#0077B5] hover:bg-[#0077B5]/10"
+                className="text-primary hover:bg-primary/10"
                 disabled={isLoading || !text.trim()}
               >
                 <Wand2 className="h-4 w-4 mr-2" />
@@ -55,7 +55,7 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="flex items-center gap-2 mb-4 p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-4 p-2 bg-secondary rounded-lg">
               <TooltipProvider>
                 {[
                   { icon: FormatBold, format: 'bold', tooltip: 'Bold' },
@@ -71,7 +71,7 @@ export default function Home() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 hover:bg-white text-gray-600 hover:text-[#0077B5]"
+                        className="h-8 w-8 p-0 hover:bg-white text-muted-foreground hover:text-primary"
                         onClick={() => applyFormat(format)}
                       >
                         <Icon className="h-4 w-4" />
@@ -89,41 +89,41 @@ export default function Home() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Type your post here..."
-              className="min-h-[400px] resize-none border-none focus:ring-0 bg-white text-gray-700"
+              className="min-h-[400px] resize-none border-none focus:ring-0 bg-card text-foreground"
             />
           </div>
 
           {/* Preview Panel */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
+          <div className="bg-card rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg text-[#0077B5]">Preview</h2>
+              <h2 className="text-lg text-primary">Preview</h2>
               <Button
                 onClick={copyToClipboard}
                 variant="ghost"
-                className="text-[#0077B5] hover:bg-[#0077B5]/10"
+                className="text-primary hover:bg-primary/10"
               >
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Text
               </Button>
             </div>
 
-            <div className="min-h-[400px] p-4 rounded-lg bg-gray-50">
+            <div className="min-h-[400px] p-4 rounded-lg bg-secondary">
               {aiSuggestion ? (
                 <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0077B5]/10 text-[#0077B5] text-sm">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm">
                     <Wand2 className="h-3.5 w-3.5" />
                     AI-enhanced suggestion
                   </div>
-                  <div className="text-gray-700">{aiSuggestion}</div>
+                  <div className="text-foreground">{aiSuggestion}</div>
                   <Button 
                     onClick={applySuggestion}
-                    className="bg-[#0077B5] text-white hover:bg-[#0077B5]/90"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     Apply Suggestion
                   </Button>
                 </div>
               ) : (
-                <div className="text-gray-700">{text}</div>
+                <div className="text-foreground">{text}</div>
               )}
             </div>
           </div>
