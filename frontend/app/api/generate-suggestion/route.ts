@@ -6,28 +6,22 @@ const openai = new OpenAI({
 
 export const runtime = 'edge'
 
-function formatForLinkedIn(text: string): string {
-  // Format headings (###)
-  text = text.replace(/^###\s+(.+)$/gm, (_: string, content: string) => {
-    return content.split('').map((char: string) => {
-      const code = char.charCodeAt(0)
-      if (code >= 97 && code <= 122) { // lowercase letters
-        return String.fromCharCode(code - 97 + 0x1D5EE) // Mathematical bold sans-serif
-      } else if (code >= 65 && code <= 90) { // uppercase letters
-        return String.fromCharCode(code - 65 + 0x1D5D4) // Mathematical bold sans-serif
-      }
-      return char
-    }).join('')
-  })
+const formatMap = {
+  bold: { start: '𝗯', end: '𝘇', offset: 0x1D5D4 },      // Mathematical Bold
+  italic: { start: '𝘢', end: '𝘻', offset: 0x1D608 },    // Mathematical Italic
+  underline: { start: '͟a', end: '͟z', offset: 0x035F }, // Combining Underline
+}
 
+function formatForLinkedIn(text: string): string {
   // Format bold text (**text**)
   text = text.replace(/\*\*(.+?)\*\*/g, (_: string, content: string) => {
     return content.split('').map((char: string) => {
       const code = char.charCodeAt(0)
       if (code >= 97 && code <= 122) { // lowercase letters
-        return String.fromCharCode(code - 97 + 0x1D5EE) // Mathematical bold sans-serif
-      } else if (code >= 65 && code <= 90) { // uppercase letters
-        return String.fromCharCode(code - 65 + 0x1D5D4) // Mathematical bold sans-serif
+        return String.fromCharCode(code - 97 + formatMap.bold.offset)
+      }
+      if (code >= 65 && code <= 90) { // uppercase letters
+        return String.fromCharCode(code - 65 + formatMap.bold.offset)
       }
       return char
     }).join('')
@@ -38,9 +32,10 @@ function formatForLinkedIn(text: string): string {
     return content.split('').map((char: string) => {
       const code = char.charCodeAt(0)
       if (code >= 97 && code <= 122) { // lowercase letters
-        return String.fromCharCode(code - 97 + 0x1D608) // Mathematical italic
-      } else if (code >= 65 && code <= 90) { // uppercase letters
-        return String.fromCharCode(code - 65 + 0x1D5E4) // Mathematical italic
+        return String.fromCharCode(code - 97 + formatMap.italic.offset)
+      }
+      if (code >= 65 && code <= 90) { // uppercase letters
+        return String.fromCharCode(code - 65 + formatMap.italic.offset)
       }
       return char
     }).join('')
@@ -49,7 +44,14 @@ function formatForLinkedIn(text: string): string {
   // Format underlined text (__text__)
   text = text.replace(/__(.+?)__/g, (_: string, content: string) => {
     return content.split('').map((char: string) => {
-      return char + '\u0332' // Combining low line
+      const code = char.charCodeAt(0)
+      if (code >= 97 && code <= 122) { // lowercase letters
+        return char + formatMap.underline.start
+      }
+      if (code >= 65 && code <= 90) { // uppercase letters
+        return char + formatMap.underline.start
+      }
+      return char
     }).join('')
   })
 
@@ -61,7 +63,7 @@ function formatForLinkedIn(text: string): string {
   text = text.replace(/^(\d+)\.\s+(.+)$/gm, '$1. $2')
 
   // Add extra newlines between sections for better readability
-  text = text.replace(/\n\n/g, '\n\n\n')
+  text = text.replace(/\n\n/g, '\n\n')
 
   return text
 }
@@ -70,7 +72,7 @@ export async function POST(req: Request) {
   const { prompt } = await req.json()
 
   const stream = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o-mini',
     stream: true,
     messages: [
       {
@@ -83,35 +85,18 @@ export async function POST(req: Request) {
 - Identify areas that need emphasis or highlighting
 
 2. Formatting Rules:
-- Use **bold** for:
-  • Key achievements or metrics
-  • Important concepts or terms
-  • Attention-grabbing statements
-  • Section headers
-- Use _italic_ for:
-  • Quotes or testimonials
-  • Subtle emphasis
-  • Industry-specific terms
-- Use __underline__ sparingly for:
-  • Call-to-actions
-  • Critical points
-  • Conclusions
-- Use bullet points (*) for:
-  • Lists of features or benefits
-  • Multiple examples
-  • Breaking down complex ideas
-- Use numbered lists (1., 2., etc.) for:
-  • Step-by-step processes
-  • Prioritized points
-  • Sequential information
+- Use **text** for important terms, key concepts, and metrics
+- Use _text_ for emphasis and industry terms
+- Use __text__ sparingly for critical points and calls-to-action
+- Use bullet points (*) for lists and features
+- Use numbers (1., 2., etc.) for steps and priorities
 
 3. Structure Enhancement:
-- Break long paragraphs into shorter, more digestible sections
-- Add clear headings (###) for different sections
+- Break long paragraphs into shorter sections
 - Ensure proper spacing between sections
 - Create a clear visual hierarchy
 
-Maintain the original message and tone while making the content more engaging and easier to read. Focus on professional formatting that enhances readability and impact.`
+Maintain the original message and tone while making the content more engaging and easier to read.`
       },
       {
         role: 'user',
