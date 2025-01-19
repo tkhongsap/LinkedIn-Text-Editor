@@ -8,16 +8,26 @@ export const runtime = 'edge'
 
 function formatForLinkedIn(text: string): string {
   // Format headings (###)
-  text = text.replace(/^###\s+(.+)$/gm, '𝗛𝗲𝗮𝗱𝗶𝗻𝗴: $1')
+  text = text.replace(/^###\s+(.+)$/gm, (_: string, content: string) => {
+    return content.split('').map((char: string) => {
+      const code = char.charCodeAt(0)
+      if (code >= 97 && code <= 122) { // lowercase letters
+        return String.fromCharCode(code - 97 + 0x1D5EE) // Mathematical bold sans-serif
+      } else if (code >= 65 && code <= 90) { // uppercase letters
+        return String.fromCharCode(code - 65 + 0x1D5D4) // Mathematical bold sans-serif
+      }
+      return char
+    }).join('')
+  })
 
-  // Format bold (**text**)
+  // Format bold text (**text**)
   text = text.replace(/\*\*(.+?)\*\*/g, (_: string, content: string) => {
     return content.split('').map((char: string) => {
       const code = char.charCodeAt(0)
       if (code >= 97 && code <= 122) { // lowercase letters
-        return String.fromCharCode(code - 97 + 0x1D5D4) // Mathematical bold small
+        return String.fromCharCode(code - 97 + 0x1D5EE) // Mathematical bold sans-serif
       } else if (code >= 65 && code <= 90) { // uppercase letters
-        return String.fromCharCode(code - 65 + 0x1D5D0) // Mathematical bold capital
+        return String.fromCharCode(code - 65 + 0x1D5D4) // Mathematical bold sans-serif
       }
       return char
     }).join('')
@@ -27,8 +37,11 @@ function formatForLinkedIn(text: string): string {
   text = text.replace(/^\*\s+(.+)$/gm, '• $1')
   text = text.replace(/^-\s+(.+)$/gm, '• $1')
 
-  // Format numbered lists
-  text = text.replace(/^\d+\.\s+(.+)$/gm, (_: string, content: string, index: number) => `${index + 1}. ${content}`)
+  // Format numbered lists (preserve original numbers)
+  text = text.replace(/^(\d+)\.\s+(.+)$/gm, '$1. $2')
+
+  // Add extra newlines between sections for better readability
+  text = text.replace(/\n\n/g, '\n\n\n')
 
   return text
 }
